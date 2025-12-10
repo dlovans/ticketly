@@ -1,7 +1,7 @@
 <script>
-	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
-	
+	import "../app.css";
+	import favicon from "$lib/assets/favicon.svg";
+	import Navbar from "$lib/components/layout/Navbar.svelte";
 	let { children } = $props();
 </script>
 
@@ -9,4 +9,5 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<Navbar />
 {@render children()}
