@@ -183,15 +183,11 @@ ticketly/
 │   │   ├── firebase/
 │   │   │   ├── config.js
 │   │   │   ├── auth.js
-│   │   │   ├── firestore.js
-│   │   │   └── storage.js
-│   │   ├── stores/
-│   │   │   ├── auth.svelte.js
-│   │   │   ├── user.svelte.js
-│   │   │   ├── clients.svelte.js
-│   │   │   ├── chat.svelte.js
-│   │   │   ├── tickets.svelte.js
-│   │   │   └── ui.svelte.js
+│   │   │   ├── storage.js
+│   │   │   ├── user.js
+│   │   │   ├── clients.js
+│   │   │   ├── chat.js
+│   │   │   └── tickets.js
 │   │   ├── utils/
 │   │   │   ├── validation.js
 │   │   │   ├── formatting.js
