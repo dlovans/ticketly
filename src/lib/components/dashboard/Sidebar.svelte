@@ -44,15 +44,15 @@
 
 <!-- Sidebar -->
 <aside
-    class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out md:static md:translate-x-0 {isOpen
-        ? 'translate-x-0'
-        : '-translate-x-full'}"
+    class="fixed z-50 flex flex-col bg-white transition-transform duration-300 ease-in-out
+    md:translate-x-0 md:static md:h-[calc(100vh-2rem)] md:m-4 md:rounded-3xl md:shadow-2xl md:border-0
+    inset-y-0 left-0 w-64 border-r border-gray-100
+    {isOpen ? 'translate-x-0' : '-translate-x-full'}"
 >
-    <div class="flex h-16 shrink-0 items-center px-6 border-b border-gray-100">
-        <a href="/dashboard" class="flex items-center gap-2">
-            <!-- Ticketly Logo Placeholder -->
+    <div class="flex h-20 shrink-0 items-center px-8">
+        <a href="/dashboard" class="flex items-center gap-3 group">
             <div
-                class="h-8 w-8 bg-black rounded-lg flex items-center justify-center text-white font-bold"
+                class="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform"
             >
                 T
             </div>
@@ -60,9 +60,12 @@
                 >Ticketly</span
             >
         </a>
-        <button class="ml-auto md:hidden" onclick={() => (isOpen = false)}>
+        <button
+            class="ml-auto md:hidden p-2 -mr-2 text-gray-500 hover:text-gray-700"
+            onclick={() => (isOpen = false)}
+        >
             <svg
-                class="h-6 w-6 text-gray-500"
+                class="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -77,12 +80,19 @@
         </button>
     </div>
 
-    <div class="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
-        <div class="px-4 mb-6">
-            <ModeSwitch bind:mode={dashboardState.mode} />
-        </div>
+    <div class="flex flex-1 flex-col overflow-y-auto px-4 pb-4">
+        <nav class="flex-1 space-y-1">
+            <div class="px-2 mb-6 mt-2">
+                <ModeSwitch bind:mode={dashboardState.mode} />
+            </div>
 
-        <nav class="mt-2 flex-1 space-y-1 px-3">
+            <!-- Navigation Section -->
+            <div
+                class="px-2 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"
+            >
+                Menu
+            </div>
+
             {#each navigation as item}
                 {@const isClients =
                     item.name === "Clients" || item.name === "Freelancers"}
@@ -95,13 +105,13 @@
 
                 <a
                     href={item.href}
-                    class="group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors {isActive
-                        ? 'bg-gray-100 text-gray-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}"
+                    class="group flex items-center px-4 py-2.5 text-xs font-semibold rounded-xl transition-all duration-200 {isActive
+                        ? 'bg-indigo-50 text-indigo-700'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}"
                 >
                     <svg
-                        class="mr-3 h-5 w-5 flex-shrink-0 transition-colors {isActive
-                            ? 'text-gray-900'
+                        class="mr-3 h-4.5 w-4.5 flex-shrink-0 transition-colors {isActive
+                            ? 'text-indigo-600'
                             : 'text-gray-400 group-hover:text-gray-500'}"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -122,25 +132,42 @@
     </div>
 
     <!-- User Profile Strip (Bottom) -->
-    <div class="border-t border-gray-200 p-4">
-        <div class="flex items-center">
+    <div class="p-4 border-t border-gray-50">
+        <div
+            class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group"
+        >
             <div
-                class="h-9 w-9 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-white"
+                class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white shadow-md shadow-indigo-100"
             >
                 JS
             </div>
-            <div class="ml-3">
-                <p
-                    class="text-sm font-medium text-gray-700 group-hover:text-gray-900"
-                >
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-gray-900 truncate">
                     John Smith
                 </p>
-                <p
-                    class="text-xs font-medium text-gray-500 group-hover:text-gray-700"
-                >
-                    View Profile
+                <p class="text-[10px] font-medium text-gray-400 truncate">
+                    john@ticketly.app
                 </p>
             </div>
+            <button
+                class="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200/50 transition-colors"
+                title="Logout"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+                    />
+                </svg>
+            </button>
         </div>
     </div>
 </aside>
