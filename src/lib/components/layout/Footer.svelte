@@ -1,5 +1,17 @@
 <script>
+    import { page } from "$app/stores";
+    import { goto } from "$app/navigation";
+
     const currentYear = new Date().getFullYear();
+
+    const handleScroll = async (id) => {
+        if ($page.url.pathname === '/') {
+            const element = document.getElementById(id);
+            if (element) element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            goto(`/${id}`);
+        }
+    }
 </script>
 
 <footer class="bg-slate-50 border-t border-slate-200 pt-16 pb-8">
@@ -22,32 +34,34 @@
                 </p>
             </div>
 
+            {#if $page.url.pathname === '/'}
             <div>
                 <h4 class="font-semibold text-slate-900 mb-4">Navigation</h4>
                 <ul class="space-y-3">
                     <li>
-                        <a
-                            href="#features"
+                        <button
+                            on:click={() => handleScroll('features')}
                             class="text-slate-600 hover:text-primary-600 text-sm transition-colors"
-                            >Features</a
+                            >Features</button
                         >
                     </li>
                     <li>
-                        <a
-                            href="#pricing"
+                        <button
+                            on:click={() => handleScroll('pricing')}
                             class="text-slate-600 hover:text-primary-600 text-sm transition-colors"
-                            >Pricing</a
+                            >Pricing</button
                         >
                     </li>
                     <li>
-                        <a
-                            href="#faq"
+                        <button
+                            on:click={() => handleScroll('faq')}
                             class="text-slate-600 hover:text-primary-600 text-sm transition-colors"
-                            >FAQ</a
+                            >FAQ</button
                         >
                     </li>
                 </ul>
             </div>
+            {/if}
 
             <div>
                 <h4 class="font-semibold text-slate-900 mb-4">Legal</h4>
