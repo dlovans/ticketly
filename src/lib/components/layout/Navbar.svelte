@@ -116,12 +116,12 @@
                 <div class="flex flex-col gap-2 px-4 pt-2">
                     <a
                         href="/login"
-                        class="btn btn-outline w-full justify-center"
+                        class="btn btn-outline w-full justify-center py-1"
                         onclick={() => (isMobileMenuOpen = false)}>Log in</a
                     >
                     <a
                         href="/register"
-                        class="btn btn-primary w-full justify-center"
+                        class="btn btn-primary w-full justify-center py-1"
                         onclick={() => (isMobileMenuOpen = false)}
                         >Get Started</a
                     >
