@@ -1,5 +1,4 @@
 <script>
-    import { fade } from "svelte/transition";
 </script>
 
 <section id="features" class="py-24 bg-slate-50">
@@ -16,10 +15,10 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div
-                class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                class="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
             >
                 <div
-                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600"
+                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -46,10 +45,10 @@
             </div>
 
             <div
-                class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                class="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
             >
                 <div
-                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600"
+                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -76,10 +75,10 @@
             </div>
 
             <div
-                class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                class="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
             >
                 <div
-                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600"
+                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -116,10 +115,10 @@
             </div>
 
             <div
-                class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                class="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
             >
                 <div
-                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600"
+                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -146,10 +145,10 @@
             </div>
 
             <div
-                class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                class="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
             >
                 <div
-                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600"
+                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -176,10 +175,10 @@
             </div>
 
             <div
-                class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                class="group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
             >
                 <div
-                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600"
+                    class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-6 text-primary-600 transition-colors duration-300 group-hover:bg-primary-600 group-hover:text-white"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
