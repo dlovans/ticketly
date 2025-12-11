@@ -123,7 +123,7 @@
                     Standard
                 </h3>
                 <div class="flex items-baseline gap-1 mb-6">
-                    <span class="text-4xl font-bold text-slate-900">$29</span>
+                    <span class="text-4xl font-bold text-slate-900">$19</span>
                     <span class="text-slate-500">/month</span>
                 </div>
                 <p class="text-slate-600 mb-6">
