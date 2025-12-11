@@ -32,13 +32,13 @@
             >
                 <a
                     href="/register"
-                    class="btn btn-xl btn-primary w-full sm:w-auto min-w-[200px]"
+                    class="btn btn-lg btn-primary w-full sm:w-auto min-w-[200px]"
                 >
                     Get Started Free
                 </a>
                 <a
                     href="#features"
-                    class="btn btn-xl btn-outline w-full sm:w-auto min-w-[200px]"
+                    class="btn btn-lg btn-outline w-full sm:w-auto min-w-[200px]"
                 >
                     Learn More
                 </a>
