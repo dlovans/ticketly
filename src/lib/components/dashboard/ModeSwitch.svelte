@@ -1,7 +1,11 @@
 <script>
-    let { mode = $bindable("freelancer") } = $props();
+    let { mode = $bindable("freelancer"), onToggle } = $props();
 
     function toggleMode() {
+        if (onToggle) {
+            onToggle();
+            return;
+        }
         mode = mode === "freelancer" ? "client" : "freelancer";
     }
 </script>

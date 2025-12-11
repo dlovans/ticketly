@@ -3,8 +3,10 @@
     import { page } from "$app/stores";
     import { setContext } from "svelte";
 
+    let { children } = $props();
+
     let isSidebarOpen = $state(false);
-    let dashboardState = $state({ mode: "freelancer" });
+    let dashboardState = $state({ mode: "freelancer", layout: "standard" }); // layout: "standard" | "full"
 
     setContext("dashboard", dashboardState);
 
@@ -15,15 +17,30 @@
     // Close sidebar on navigation (mobile)
     $effect(() => {
         // Just reading page.url to react to it
-        $page.url;
+        const path = $page.url.pathname;
+
         isSidebarOpen = false;
+
+        // Reset layout on nav (optional, but safe)
+        dashboardState.layout = "standard";
+
+        // Sync mode from URL (single source of truth for these routes)
+        if (path.startsWith("/dashboard/client")) {
+            dashboardState.mode = "client";
+        } else if (path.startsWith("/dashboard/freelancer")) {
+            dashboardState.mode = "freelancer";
+        }
     });
+
+    let isGatekeeper = $derived($page.url.pathname === "/dashboard");
 </script>
 
 <div
     class="flex h-screen bg-[#F3F4F6] font-sans selection:bg-indigo-100 selection:text-indigo-700"
 >
-    <Sidebar bind:isOpen={isSidebarOpen} />
+    {#if !isGatekeeper}
+        <Sidebar bind:isOpen={isSidebarOpen} />
+    {/if}
 
     <div class="flex flex-1 flex-col overflow-hidden relative">
         <!-- Top bar for mobile only -->
@@ -62,9 +79,16 @@
             </button>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12">
-            <div class="mx-auto max-w-6xl">
-                <slot />
+        <main
+            class="flex-1 overflow-y-auto transition-all duration-300
+            {dashboardState.layout === 'full' ? 'p-0' : 'p-4 sm:p-8 lg:p-12'}"
+        >
+            <div
+                class={dashboardState.layout === "full"
+                    ? "h-full"
+                    : "mx-auto max-w-6xl"}
+            >
+                {@render children()}
             </div>
         </main>
     </div>
