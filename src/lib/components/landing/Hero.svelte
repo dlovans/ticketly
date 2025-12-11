@@ -1,5 +1,6 @@
 <script>
     import { fade, fly } from "svelte/transition";
+    import dashboardPreview from "$lib/assets/dashboard-preview.jpg";
 </script>
 
 <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
@@ -55,13 +56,11 @@
                 <div
                     class="aspect-[16/9] rounded-xl bg-slate-100 overflow-hidden relative group"
                 >
-                    <div
-                        class="absolute inset-0 flex items-center justify-center text-slate-400"
-                    >
-                        <span class="text-lg font-medium"
-                            >Dashboard Preview</span
-                        >
-                    </div>
+                    <img
+                        src={dashboardPreview}
+                        alt="Ticketly Dashboard Preview"
+                        class="w-full h-full object-cover"
+                    />
                 </div>
             </div>
 
