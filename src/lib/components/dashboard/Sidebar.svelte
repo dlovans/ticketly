@@ -2,6 +2,7 @@
     import { getContext } from "svelte";
     import ModeSwitch from "./ModeSwitch.svelte";
     import { page } from "$app/stores";
+    
 
     let { isOpen = $bindable(false) } = $props();
 
@@ -10,7 +11,7 @@
     const navigation = [
         {
             name: "Tickets",
-            href: "/dashboard",
+            href: `/dashboard/${dashboardState.mode === "client" ? "client" : "freelancer"}`,
             icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
         },
         {
@@ -30,7 +31,17 @@
         },
     ];
 
-    // Example logo - simplified text for now
+    import { goto } from "$app/navigation";
+
+    function handleModeSwitch() {
+        const newMode =
+            dashboardState.mode === "freelancer" ? "client" : "freelancer";
+        dashboardState.mode = newMode;
+        localStorage.setItem("ticketly_mode", newMode);
+        // Navigate
+        if (newMode === "freelancer") goto("/dashboard/freelancer");
+        if (newMode === "client") goto("/dashboard/client");
+    }
 </script>
 
 <!-- Mobile Overlay -->
@@ -83,7 +94,15 @@
     <div class="flex flex-1 flex-col overflow-y-auto px-4 pb-4">
         <nav class="flex-1 space-y-1">
             <div class="px-2 mb-6 mt-2">
-                <ModeSwitch bind:mode={dashboardState.mode} />
+                <!-- Pass standard binding, but also we need to intercept the toggle -->
+                <!-- Actually ModeSwitch probably handles the click internally and just updating 'mode' which is bound. 
+                     If I want to trigger nav on change, I can use a reactive statement or modify ModeSwitch.
+                     Let's check ModeSwitch. 
+                -->
+                <ModeSwitch
+                    bind:mode={dashboardState.mode}
+                    onToggle={handleModeSwitch}
+                />
             </div>
 
             <!-- Navigation Section -->
@@ -101,7 +120,14 @@
                         ? "Freelancers"
                         : "Clients"
                     : item.name}
-                {@const isActive = $page.url.pathname === item.href}
+                {@const isActive =
+                    $page.url.pathname.startsWith(item.href) &&
+                    item.href !== "/dashboard"
+                        ? true
+                        : item.href === "/dashboard"
+                          ? $page.url.pathname === "/dashboard/freelancer" ||
+                            $page.url.pathname === "/dashboard/client" // Hack: Mark 'Tickets' active for both
+                          : false}
 
                 <a
                     href={item.href}
