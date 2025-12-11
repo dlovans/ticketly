@@ -106,7 +106,8 @@
 
                 <a
                     href="/register"
-                    class="btn btn-outline w-full justify-center">Get Started</a
+                    class="btn btn-md btn-outline w-full justify-center"
+                    >Get Started</a
                 >
             </div>
 
@@ -209,7 +210,7 @@
 
                 <a
                     href="/register"
-                    class="btn btn-primary w-full justify-center"
+                    class="btn btn-md btn-primary w-full justify-center"
                     >Start Free Trial</a
                 >
             </div>
@@ -306,7 +307,7 @@
 
                 <a
                     href="/register"
-                    class="btn btn-outline w-full justify-center"
+                    class="btn btn-md btn-outline w-full justify-center"
                     >Contact Sales</a
                 >
             </div>
