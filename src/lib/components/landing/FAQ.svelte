@@ -33,10 +33,6 @@
             answer: "Yes, you can change your subscription plan at any time from your settings. Changes will take effect immediately or at the start of the next billing cycle.",
         },
         {
-            question: "Do you offer refunds?",
-            answer: "We offer a 14-day money-back guarantee for all paid plans. If you're not satisfied, simply contact our support team.",
-        },
-        {
             question: "How do I get support if I have an issue?",
             answer: "You can reach out to our support team via the 'Help' section in your dashboard. Standard and Professional plans also include priority support.",
         },
