@@ -26,7 +26,9 @@
               ? "bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/10"
               : ticket.priority === "Low"
                 ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/10"
-                : "bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-500/10";
+                : ticket.priority === "Emergency"
+                  ? "bg-red-200 text-red-900 ring-1 ring-inset ring-red-700/10"
+                  : "bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-500/10";
 
     function toggleExpand() {
         isExpanded = !isExpanded;
@@ -60,7 +62,7 @@
             </h1>
         </div>
         <!-- Mobile Chevron -->
-        <button class="md:hidden text-gray-400">
+        <button class="md:hidden text-gray-400" aria-label="Toggle details">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -135,24 +137,42 @@
                 </div>
             </div>
 
-            <!-- Client Info -->
+            <!-- Client / Freelancer Info -->
             <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
                 <h3
                     class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3"
                 >
-                    Client
+                    {isFreelancer ? "Client" : "Assigned Freelancer"}
                 </h3>
                 <div class="flex items-center gap-3">
                     <div
-                        class="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold shadow-sm"
+                        class="h-10 w-10 rounded-xl {isFreelancer
+                            ? 'bg-gradient-to-br from-indigo-500 to-purple-500'
+                            : 'bg-gradient-to-br from-emerald-500 to-teal-500'} text-white flex items-center justify-center font-bold shadow-sm"
                     >
-                        {ticket.clientAvatar ||
-                            ticket.client.substring(0, 2).toUpperCase()}
+                        {#if isFreelancer}
+                            {ticket.clientAvatar ||
+                                ticket.client.substring(0, 2).toUpperCase()}
+                        {:else}
+                            {ticket.freelancerAvatar ||
+                                (ticket.freelancer
+                                    ? ticket.freelancer
+                                          .substring(0, 2)
+                                          .toUpperCase()
+                                    : "UN")}
+                        {/if}
                     </div>
                     <div class="min-w-0">
                         <p class="text-sm font-bold text-gray-900 truncate">
-                            {ticket.client}
+                            {isFreelancer
+                                ? ticket.client
+                                : ticket.freelancer || "Unassigned"}
                         </p>
+                        {#if !isFreelancer && ticket.freelancer}
+                            <p class="text-xs text-gray-500 truncate">
+                                Support Specialist
+                            </p>
+                        {/if}
                     </div>
                 </div>
             </div>

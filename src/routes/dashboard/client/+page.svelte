@@ -16,6 +16,7 @@
             hasUnread: true,
             description:
                 "Users are reporting a 500 Internal Server Error when attempting to log in via the main portal. This seems to be affecting about 30% of traffic. Initial logs show a database connection timeout.",
+            freelancer: "Sarah Jenkins",
         },
         {
             id: "102",
@@ -27,6 +28,7 @@
             hasUnread: false,
             description:
                 "Please update the hero section text to: 'The future of automation is here'. Also change the CTA button color to match the new brand guidelines.",
+            freelancer: "Mike Ross",
         },
         {
             id: "103",
@@ -38,6 +40,7 @@
             hasUnread: false,
             description:
                 "The hamburger menu is misaligned on iPhone 14 Pro Max. It overlaps with the logo. Screenshot attached in previous email.",
+            freelancer: "Sarah Jenkins",
         },
         {
             id: "104",
@@ -49,6 +52,7 @@
             hasUnread: false,
             description:
                 "We need a new 'Editor' role that can modify content but not publish it. Permissions should be limited to the /blog section.",
+            freelancer: "Jessica Pearson",
         },
         {
             id: "105",
@@ -60,6 +64,7 @@
             hasUnread: true,
             description:
                 "CRITICAL: The main production database is rejecting connections. All services are down. Immediate assistance required.",
+            freelancer: "Harvey Specter",
         },
         {
             id: "106",
@@ -71,6 +76,7 @@
             hasUnread: false,
             description:
                 "Rebranding complete. Please update the dashboard logo to the new SVG provided in the assets folder.",
+            freelancer: "Louis Litt",
         },
     ];
 
