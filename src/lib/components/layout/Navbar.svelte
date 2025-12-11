@@ -1,5 +1,6 @@
 <script>
     import { fly } from "svelte/transition";
+    import logo from "$lib/assets/logo.jpg";
     let isMobileMenuOpen = $state(false);
 
     function toggleMobileMenu() {
@@ -12,11 +13,7 @@
         class="flex items-center justify-between w-full max-w-5xl px-6 py-3 mx-4 border shadow-lg rounded-xl backdrop-blur-sm bg-white/80 border-slate-200/60 shadow-slate-300/20 transition-all duration-300"
     >
         <a href="/" class="flex items-center gap-2">
-            <img
-                src="/logo.jpg"
-                alt="Ticketly Logo"
-                class="h-8 w-8 rounded-full"
-            />
+            <img src={logo} alt="Ticketly Logo" class="h-8 w-8 rounded-full" />
             <span class="text-xl font-bold text-slate-900">Ticketly</span>
         </a>
 
