@@ -124,13 +124,9 @@
                         : "Clients"
                     : item.name}
                 {@const isActive =
-                    $page.url.pathname.startsWith(item.href) &&
-                    item.href !== "/dashboard"
-                        ? true
-                        : item.href === "/dashboard"
-                          ? $page.url.pathname === "/dashboard/freelancer" ||
-                            $page.url.pathname === "/dashboard/client" // Hack: Mark 'Tickets' active for both
-                          : false}
+                    item.name === "Tickets"
+                        ? $page.url.pathname === item.href
+                        : $page.url.pathname.startsWith(item.href)}
 
                 <a
                     href={item.href}
