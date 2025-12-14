@@ -2,6 +2,7 @@
     import Sidebar from "$lib/components/dashboard/Sidebar.svelte";
     import { page } from "$app/stores";
     import { setContext } from "svelte";
+    import logo from "$lib/assets/logo.jpg";
 
     let { children } = $props();
 
@@ -48,11 +49,11 @@
             class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:hidden z-10 sticky top-0"
         >
             <div class="flex items-center gap-3">
-                <div
-                    class="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold"
-                >
-                    T
-                </div>
+                <img
+                    src={logo}
+                    alt="Ticketly"
+                    class="h-8 w-8 rounded-lg object-cover"
+                />
                 <div class="text-lg font-bold text-gray-900">Ticketly</div>
             </div>
             <button
