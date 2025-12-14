@@ -71,12 +71,6 @@
             </div>
             <div>
                 <h3 class="text-sm font-bold text-gray-900">{recipientName}</h3>
-                <span
-                    class="text-[10px] text-green-500 font-medium flex items-center gap-1"
-                >
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    Online
-                </span>
             </div>
         </div>
         <button
