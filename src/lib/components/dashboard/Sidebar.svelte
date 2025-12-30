@@ -2,6 +2,7 @@
     import { getContext } from "svelte";
     import ModeSwitch from "./ModeSwitch.svelte";
     import { page } from "$app/stores";
+    import logo from "$lib/assets/logo.jpg";
 
     let { isOpen = $bindable(false) } = $props();
 
@@ -79,11 +80,11 @@
 >
     <div class="flex h-20 shrink-0 items-center px-8">
         <a href="/dashboard" class="flex items-center gap-3 group">
-            <div
-                class="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform"
-            >
-                T
-            </div>
+            <img
+                src={logo}
+                alt="Ticketly"
+                class="h-10 w-10 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform object-cover"
+            />
             <span class="text-xl font-bold tracking-tight text-gray-900"
                 >Ticketly</span
             >
