@@ -1,22 +1,39 @@
 <script>
     import { fade } from "svelte/transition";
     import logo from "$lib/assets/logo.jpg";
+    import { forgotPassword } from "$lib/firebase/auth.js";
 
-    let email = "";
-    let isLoading = false;
-    let emailSent = false;
+    let email = $state("");
+    let isLoading = $state(false);
+    let emailSent = $state(false);
+    let error = $state("");
 
-    function handleResetPassword() {
+    async function handleResetPassword() {
         if (!email) return;
         isLoading = true;
-        // TODO: Implement Firebase password reset
-        console.log("Reset password for:", email);
+        error = "";
 
-        // Simulate success
-        setTimeout(() => {
-            isLoading = false;
+        try {
+            await forgotPassword(email);
             emailSent = true;
-        }, 1000);
+        } catch (err) {
+            error = getErrorMessage(err.code);
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    function getErrorMessage(code) {
+        switch (code) {
+            case "auth/user-not-found":
+                return "No account found with this email";
+            case "auth/invalid-email":
+                return "Invalid email address";
+            case "auth/too-many-requests":
+                return "Too many attempts. Please try again later.";
+            default:
+                return "An error occurred. Please try again.";
+        }
     }
 </script>
 
@@ -45,6 +62,16 @@
                     Enter your email and we'll send you a reset link
                 </p>
             </div>
+
+            <!-- Error Message -->
+            {#if error}
+                <div
+                    class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600"
+                    in:fade
+                >
+                    {error}
+                </div>
+            {/if}
 
             {#if emailSent}
                 <!-- Success State -->
@@ -75,9 +102,10 @@
                         <span class="font-semibold text-gray-700">{email}</span>
                     </p>
                     <button
-                        on:click={() => {
+                        onclick={() => {
                             emailSent = false;
                             email = "";
+                            error = "";
                         }}
                         class="text-sm font-semibold text-indigo-600 hover:text-indigo-500"
                     >
@@ -87,7 +115,10 @@
             {:else}
                 <!-- Form State -->
                 <form
-                    on:submit|preventDefault={handleResetPassword}
+                    onsubmit={(e) => {
+                        e.preventDefault();
+                        handleResetPassword();
+                    }}
                     class="space-y-5"
                 >
                     <div>
