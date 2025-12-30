@@ -1,6 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
+    import logo from "$lib/assets/logo.jpg";
 
     const currentYear = new Date().getFullYear();
 
@@ -20,7 +21,7 @@
             <div class="col-span-1 md:col-span-1">
                 <a href="/" class="flex items-center gap-2 mb-4">
                     <img
-                        src="/logo.jpg"
+                        src={logo}
                         alt="Ticketly Logo"
                         class="h-8 w-8 rounded-full"
                     />
@@ -85,7 +86,7 @@
         </div>
 
         <div
-            class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+            class="border-t border-slate-200 pt-8 text-center"
         >
             <p class="text-slate-500 text-sm">
                 &copy; {currentYear} Ticketly. All rights reserved.
