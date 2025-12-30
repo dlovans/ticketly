@@ -1,6 +1,7 @@
 <script>
     export let ticket;
     export let hasUnread = false;
+    export let onClick;
 
     function getPriorityColor(priority) {
         switch (priority) {
@@ -26,7 +27,11 @@
         ? 'opacity-75 grayscale hover:grayscale-0 hover:opacity-100 bg-gray-50/50'
         : ''}"
 >
-    <a href="/dashboard/tickets/{ticket.id}" class="block relative">
+    <button
+        type="button"
+        class="block w-full text-left relative focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-600 rounded-xl"
+        on:click={() => onClick(ticket)}
+    >
         <div class="px-4 py-4 sm:px-6">
             <div
                 class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
@@ -64,6 +69,13 @@
                                 {ticket.title}
                             </p>
                         </div>
+                        {#if ticket.statusMessage}
+                            <p
+                                class="text-xs text-gray-500 italic mt-0.5 truncate"
+                            >
+                                "{ticket.statusMessage}"
+                            </p>
+                        {/if}
                         <div
                             class="flex items-center gap-3 text-xs text-gray-500 mt-1"
                         >
@@ -106,5 +118,5 @@
                 </div>
             </div>
         </div>
-    </a>
+    </button>
 </li>

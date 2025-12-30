@@ -2,35 +2,64 @@
     import { getContext } from "svelte";
     import ModeSwitch from "./ModeSwitch.svelte";
     import { page } from "$app/stores";
+    import logo from "$lib/assets/logo.jpg";
 
     let { isOpen = $bindable(false) } = $props();
 
     const dashboardState = getContext("dashboard");
 
-    const navigation = [
+    let navigation = $derived([
         {
             name: "Tickets",
-            href: "/dashboard",
+            href: `/dashboard/${dashboardState.mode === "client" ? "client" : "freelancer"}`,
             icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
         },
         {
-            name: "Clients",
-            href: "/dashboard/clients",
+            name: dashboardState.mode === "client" ? "Freelancers" : "Clients",
+            href:
+                dashboardState.mode === "freelancer"
+                    ? "/dashboard/freelancer/clients"
+                    : "/dashboard/client/freelancers",
             icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
         },
         {
             name: "Chat",
-            href: "/dashboard/chat",
+            href:
+                dashboardState.mode === "freelancer"
+                    ? "/dashboard/freelancer/chat"
+                    : "/dashboard/client/chat",
             icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z",
         },
         {
             name: "Settings",
-            href: "/dashboard/settings",
+            href:
+                dashboardState.mode === "freelancer"
+                    ? "/dashboard/freelancer/settings"
+                    : "/dashboard/client/settings",
             icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543 .826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
         },
-    ];
+        ...(dashboardState.mode === "freelancer"
+            ? [
+                  {
+                      name: "Billing",
+                      href: "/dashboard/freelancer/billing",
+                      icon: "M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z",
+                  },
+              ]
+            : []),
+    ]);
 
-    // Example logo - simplified text for now
+    import { goto } from "$app/navigation";
+
+    function handleModeSwitch() {
+        const newMode =
+            dashboardState.mode === "freelancer" ? "client" : "freelancer";
+        dashboardState.mode = newMode;
+        localStorage.setItem("ticketly_mode", newMode);
+        // Navigate
+        if (newMode === "freelancer") goto("/dashboard/freelancer");
+        if (newMode === "client") goto("/dashboard/client");
+    }
 </script>
 
 <!-- Mobile Overlay -->
@@ -51,11 +80,11 @@
 >
     <div class="flex h-20 shrink-0 items-center px-8">
         <a href="/dashboard" class="flex items-center gap-3 group">
-            <div
-                class="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform"
-            >
-                T
-            </div>
+            <img
+                src={logo}
+                alt="Ticketly"
+                class="h-10 w-10 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform object-cover"
+            />
             <span class="text-xl font-bold tracking-tight text-gray-900"
                 >Ticketly</span
             >
@@ -63,6 +92,7 @@
         <button
             class="ml-auto md:hidden p-2 -mr-2 text-gray-500 hover:text-gray-700"
             onclick={() => (isOpen = false)}
+            aria-label="Close sidebar"
         >
             <svg
                 class="h-6 w-6"
@@ -83,7 +113,15 @@
     <div class="flex flex-1 flex-col overflow-y-auto px-4 pb-4">
         <nav class="flex-1 space-y-1">
             <div class="px-2 mb-6 mt-2">
-                <ModeSwitch bind:mode={dashboardState.mode} />
+                <!-- Pass standard binding, but also we need to intercept the toggle -->
+                <!-- Actually ModeSwitch probably handles the click internally and just updating 'mode' which is bound. 
+                     If I want to trigger nav on change, I can use a reactive statement or modify ModeSwitch.
+                     Let's check ModeSwitch. 
+                -->
+                <ModeSwitch
+                    bind:mode={dashboardState.mode}
+                    onToggle={handleModeSwitch}
+                />
             </div>
 
             <!-- Navigation Section -->
@@ -101,7 +139,10 @@
                         ? "Freelancers"
                         : "Clients"
                     : item.name}
-                {@const isActive = $page.url.pathname === item.href}
+                {@const isActive =
+                    item.name === "Tickets"
+                        ? $page.url.pathname === item.href
+                        : $page.url.pathname.startsWith(item.href)}
 
                 <a
                     href={item.href}
