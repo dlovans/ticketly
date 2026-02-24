@@ -123,7 +123,7 @@
                 <input
                     type="tel"
                     id="profile-phone"
-                    bind:value={profile.phone}
+                    bind:value={tempPhone}
                     disabled={!isEditing}
                     placeholder="555-0123"
                     class="block w-full rounded-xl border-transparent {isEditing
