@@ -5,6 +5,8 @@
     import ModeSwitch from "./ModeSwitch.svelte";
     import logo from "$lib/assets/logo.jpg";
     import { logout } from "$lib/firebase/auth.js";
+    import { auth } from "$lib/firebase/client.js";
+    import { setFreelancerMode } from "$lib/firebase/user.js";
 
     let { isOpen = $bindable(false) } = $props();
 
@@ -54,12 +56,15 @@
             : []),
     ]);
 
-    function handleModeSwitch() {
+    async function handleModeSwitch() {
         const newMode =
             dashboardState.mode === "freelancer" ? "client" : "freelancer";
         dashboardState.mode = newMode;
         localStorage.setItem("ticketly_mode", newMode);
-        // Navigate
+        const user = auth.currentUser;
+        if (user) {
+            await setFreelancerMode(user.uid, newMode === "freelancer");
+        }
         if (newMode === "freelancer") goto("/dashboard/freelancer");
         if (newMode === "client") goto("/dashboard/client");
     }
