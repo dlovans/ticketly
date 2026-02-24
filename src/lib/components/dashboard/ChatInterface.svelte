@@ -1,11 +1,9 @@
 <script>
     import { onMount, tick } from "svelte";
 
-    export let messages = [];
-    export let onSendMessage;
-    export let disabled = false;
+    let { messages = [], onSendMessage, disabled = false } = $props();
 
-    let newMessage = "";
+    let newMessage = $state("");
     let chatContainer;
 
     async function handleSend() {
@@ -26,13 +24,10 @@
         scrollToBottom();
     });
 
-    // Auto-scroll when messages change
-    $: if (messages) {
-        (async () => {
-            await tick();
-            scrollToBottom();
-        })();
-    }
+    $effect(() => {
+        messages;
+        tick().then(scrollToBottom);
+    });
 </script>
 
 <div
@@ -86,13 +81,13 @@
             </div>
         {:else}
             <form
-                on:submit|preventDefault={handleSend}
+                onsubmit={(e) => { e.preventDefault(); handleSend(); }}
                 class="flex items-end gap-2"
             >
                 <div class="flex-1 relative">
                     <textarea
                         bind:value={newMessage}
-                        on:keydown={(e) => {
+                        onkeydown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                                 e.preventDefault();
                                 handleSend();

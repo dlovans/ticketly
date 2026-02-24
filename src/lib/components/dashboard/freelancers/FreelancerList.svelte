@@ -1,6 +1,5 @@
 <script>
-    export let freelancers = [];
-    export let onRemove;
+    let { freelancers = [], onRemove } = $props();
 </script>
 
 <div
@@ -13,6 +12,7 @@
             >
                 <tr>
                     <th class="px-6 py-4">Freelancer</th>
+                    <th class="px-6 py-4">Phone</th>
                     <th class="px-6 py-4">Product</th>
                     <th class="px-6 py-4">Joined</th>
                     <th class="px-6 py-4 text-right">Actions</th>
@@ -40,6 +40,13 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
+                            {#if freelancer.phone}
+                                <span class="text-sm text-gray-700">{freelancer.phone}</span>
+                            {:else}
+                                <span class="text-xs text-gray-300">—</span>
+                            {/if}
+                        </td>
+                        <td class="px-6 py-4">
                             <span
                                 class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700"
                             >
@@ -51,7 +58,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <button
-                                on:click={() => onRemove(freelancer.id)}
+                                onclick={() => onRemove(freelancer.id)}
                                 class="p-2 text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                                 aria-label="Remove freelancer"
                                 title="Remove freelancer access"
@@ -77,7 +84,7 @@
                 {#if freelancers.length === 0}
                     <tr>
                         <td
-                            colspan="4"
+                            colspan="5"
                             class="px-6 py-12 text-center text-gray-500"
                         >
                             <div class="flex flex-col items-center gap-3">

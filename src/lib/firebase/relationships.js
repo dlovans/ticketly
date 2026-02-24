@@ -45,19 +45,23 @@ export function listenToClients(freelancerUid, callback) {
         relationshipsRef,
         where("freelancerId", "==", freelancerUid),
         where("status", "==", "active"),
-        orderBy("createdAt", "desc"),
     );
 
     return onSnapshot(q, (snapshot) => {
-        const clients = snapshot.docs.map((d) => ({
-            id: d.id,
-            email: d.data().clientEmail,
-            name: d.data().clientName,
-            companyName: d.data().companyName,
-            productName: d.data().productName,
-            website: d.data().website,
-        }));
+        const clients = snapshot.docs
+            .map((d) => ({
+                id: d.id,
+                email: d.data().clientEmail,
+                name: d.data().clientName,
+                companyName: d.data().companyName,
+                productName: d.data().productName,
+                website: d.data().website,
+                _createdAt: d.data().createdAt?.seconds || 0,
+            }))
+            .sort((a, b) => b._createdAt - a._createdAt);
         callback(clients);
+    }, (error) => {
+        console.error("listenToClients error:", error);
     });
 }
 
@@ -72,27 +76,32 @@ export function listenToFreelancers(clientEmail, callback) {
         relationshipsRef,
         where("clientEmail", "==", clientEmail),
         where("status", "==", "active"),
-        orderBy("createdAt", "desc"),
     );
 
     return onSnapshot(q, (snapshot) => {
-        const freelancers = snapshot.docs.map((d) => {
-            const data = d.data();
-            const created = data.createdAt?.toDate();
-            return {
-                id: d.id,
-                name: data.freelancerName,
-                email: data.freelancerEmail,
-                productName: data.productName,
-                joinedDate: created
-                    ? created.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                      })
-                    : "",
-            };
-        });
+        const freelancers = snapshot.docs
+            .map((d) => {
+                const data = d.data();
+                const created = data.createdAt?.toDate();
+                return {
+                    id: d.id,
+                    uid: data.freelancerId,
+                    name: data.freelancerName,
+                    email: data.freelancerEmail,
+                    productName: data.productName,
+                    joinedDate: created
+                        ? created.toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                          })
+                        : "",
+                    _createdAt: data.createdAt?.seconds || 0,
+                };
+            })
+            .sort((a, b) => b._createdAt - a._createdAt);
         callback(freelancers);
+    }, (error) => {
+        console.error("listenToFreelancers error:", error);
     });
 }

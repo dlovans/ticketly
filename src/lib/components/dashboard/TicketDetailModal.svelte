@@ -5,29 +5,27 @@
     import ChatInterface from "./ChatInterface.svelte";
     import { quintOut } from "svelte/easing";
 
-    export let ticket;
-    export let isOpen = false;
-    export let onClose;
-    export let isFreelancer = false;
-    export let onStatusUpdate; // Pass through to InfoCard
+    let { ticket, isOpen = false, onClose, isFreelancer = false, onStatusUpdate, messages = [], onSendMessage } = $props();
 
-    let isLoading = true;
+    let isLoading = $state(true);
 
-    // Reset loading state when ticket changes or modal opens
-    $: if (isOpen && ticket) {
-        isLoading = true;
-        setTimeout(() => {
-            isLoading = false;
-        }, 800); // 800ms mock loading
-    }
+    $effect(() => {
+        if (isOpen && ticket) {
+            isLoading = true;
+            setTimeout(() => {
+                isLoading = false;
+            }, 800);
+        }
+    });
 </script>
 
 {#if isOpen && ticket}
     <!-- Backdrop -->
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
     <div
         class="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
         transition:fade={{ duration: 200 }}
-        on:click|self={onClose}
+        onclick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         role="dialog"
         aria-modal="true"
     >
@@ -39,7 +37,7 @@
             <!-- Close Button (Absolute Top Right) -->
             <button
                 class="absolute top-4 right-4 z-20 p-2 bg-white/50 hover:bg-white rounded-full text-gray-500 hover:text-red-500 transition-colors backdrop-blur-md border border-gray-100 shadow-sm"
-                on:click={onClose}
+                onclick={onClose}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -88,23 +86,8 @@
                         <!-- We essentially just render the ChatInterface here, maybe with a header if we wanted -->
                         <!-- Passing a mock 'me' / 'them' context is tricky without data but ChatInterface handles messages -->
                         <ChatInterface
-                            messages={[
-                                {
-                                    id: 1,
-                                    text: "System: Connected to ticket channel.",
-                                    sender: "System",
-                                    timestamp: "Now",
-                                    isMe: false,
-                                },
-                                {
-                                    id: 2,
-                                    text: "Previous chat history would load here...",
-                                    sender: "System",
-                                    timestamp: "Now",
-                                    isMe: false,
-                                },
-                            ]}
-                            onSendMessage={(text) => console.log("Sent", text)}
+                            {messages}
+                            {onSendMessage}
                             disabled={ticket.status === "Closed"}
                         />
                     </div>

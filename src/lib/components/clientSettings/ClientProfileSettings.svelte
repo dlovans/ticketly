@@ -43,7 +43,7 @@
         </div>
         {#if !isEditing}
             <button
-                on:click={() => {
+                onclick={() => {
                     tempName = profile.name;
                     tempCompanyName = profile.companyName;
                     isEditing = true;
@@ -200,7 +200,7 @@
         {#if isEditing}
             <div class="flex justify-end gap-3 pt-4" transition:fade>
                 <button
-                    on:click={() => {
+                    onclick={() => {
                         isEditing = false;
                         tempName = profile.name;
                         tempCompanyName = profile.companyName;
@@ -210,7 +210,7 @@
                     Cancel
                 </button>
                 <button
-                    on:click={handleSave}
+                    onclick={handleSave}
                     class="px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all"
                 >
                     Save Changes

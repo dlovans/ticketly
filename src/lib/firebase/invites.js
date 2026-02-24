@@ -3,6 +3,7 @@ import {
     doc,
     addDoc,
     updateDoc,
+    deleteDoc,
     query,
     where,
     orderBy,
@@ -79,6 +80,14 @@ export async function declineInvite(inviteId) {
 }
 
 /**
+ * Cancel/remove a pending invite (freelancer action).
+ */
+export async function cancelInvite(inviteId) {
+    const ref = doc(db, "pendingInvites", inviteId);
+    return deleteDoc(ref);
+}
+
+/**
  * Listen to incoming invites for a client in real-time.
  * Only returns pending invites (not accepted/declined).
  * @returns {Function} Unsubscribe function
@@ -88,15 +97,15 @@ export function listenToIncomingInvites(clientEmail, callback) {
         invitesRef,
         where("clientEmail", "==", clientEmail),
         where("status", "==", "pending"),
-        orderBy("createdAt", "desc"),
     );
 
     return onSnapshot(q, (snapshot) => {
-        const invites = snapshot.docs.map((d) => ({
-            id: d.id,
-            ...d.data(),
-        }));
+        const invites = snapshot.docs
+            .map((d) => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         callback(invites);
+    }, (error) => {
+        console.error("listenToIncomingInvites error:", error);
     });
 }
 
@@ -110,14 +119,14 @@ export function listenToOutgoingInvites(freelancerUid, callback) {
     const q = query(
         invitesRef,
         where("freelancerId", "==", freelancerUid),
-        orderBy("createdAt", "desc"),
     );
 
     return onSnapshot(q, (snapshot) => {
-        const invites = snapshot.docs.map((d) => ({
-            id: d.id,
-            ...d.data(),
-        }));
+        const invites = snapshot.docs
+            .map((d) => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         callback(invites);
+    }, (error) => {
+        console.error("listenToOutgoingInvites error:", error);
     });
 }

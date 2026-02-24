@@ -1,7 +1,5 @@
 <script>
-    export let ticket;
-    export let hasUnread = false;
-    export let onClick;
+    let { ticket, hasUnread = false, onClick } = $props();
 
     function getPriorityColor(priority) {
         switch (priority) {
@@ -18,8 +16,7 @@
         }
     }
 
-    // Determine visual style based on status
-    $: isResolved = ["Resolved", "Closed"].includes(ticket.status);
+    let isResolved = $derived(["Resolved", "Closed"].includes(ticket.status));
 </script>
 
 <li
@@ -30,7 +27,7 @@
     <button
         type="button"
         class="block w-full text-left relative focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-600 rounded-xl"
-        on:click={() => onClick(ticket)}
+        onclick={() => onClick(ticket)}
     >
         <div class="px-4 py-4 sm:px-6">
             <div

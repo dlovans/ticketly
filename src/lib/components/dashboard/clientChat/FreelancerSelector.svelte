@@ -1,18 +1,16 @@
 <script>
-    export let freelancers = [];
-    export let selectedFreelancerId = null;
-    export let onSelectFreelancer;
-    export let isCollapsed = false;
-    export let onToggleCollapse;
+    let { freelancers = [], selectedFreelancerId = null, onSelectFreelancer, isCollapsed = false, onToggleCollapse } = $props();
 
-    let searchTerm = "";
+    let searchTerm = $state("");
 
-    $: filteredFreelancers = freelancers.filter(
-        (freelancer) =>
-            freelancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            freelancer.productName
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()),
+    let filteredFreelancers = $derived(
+        freelancers.filter(
+            (freelancer) =>
+                freelancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                freelancer.productName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()),
+        ),
     );
 </script>
 
@@ -30,7 +28,7 @@
                 <h2 class="text-lg font-bold text-gray-900">Messages</h2>
             {/if}
             <button
-                on:click={onToggleCollapse}
+                onclick={onToggleCollapse}
                 class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
                 aria-label={isCollapsed ? "Expand list" : "Collapse list"}
             >
@@ -104,7 +102,7 @@
 
         {#each filteredFreelancers as freelancer (freelancer.id)}
             <button
-                on:click={() => onSelectFreelancer(freelancer.id)}
+                onclick={() => onSelectFreelancer(freelancer.id)}
                 class="w-full flex items-center {isCollapsed
                     ? 'justify-center px-2 py-4'
                     : 'px-4 py-4 gap-3'} hover:bg-gray-50 transition-colors text-left relative {selectedFreelancerId ===

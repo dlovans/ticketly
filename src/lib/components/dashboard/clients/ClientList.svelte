@@ -1,7 +1,5 @@
 <script>
-    export let clients = [];
-    export let onEdit;
-    export let onDelete;
+    let { clients = [], onEdit, onDelete } = $props();
 </script>
 
 <div
@@ -56,7 +54,7 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button
-                                    on:click={() => onEdit(client)}
+                                    onclick={() => onEdit(client)}
                                     class="p-2 text-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
                                     aria-label="Edit client"
                                 >
@@ -76,7 +74,7 @@
                                     </svg>
                                 </button>
                                 <button
-                                    on:click={() => onDelete(client.id)}
+                                    onclick={() => onDelete(client.id)}
                                     class="p-2 text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                                     aria-label="Delete client"
                                 >

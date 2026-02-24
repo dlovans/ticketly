@@ -1,108 +1,39 @@
 <script>
-    import { onMount, getContext } from "svelte";
+    import { onMount, onDestroy, getContext } from "svelte";
     import TicketCard from "$lib/components/dashboard/TicketCard.svelte";
+    import TicketDetailModal from "$lib/components/dashboard/TicketDetailModal.svelte";
+    import NewTicketModal from "$lib/components/dashboard/NewTicketModal.svelte";
+    import { listenToClientTickets, createTicket } from "$lib/firebase/tickets.js";
+    import { listenToTicketMessages, sendTicketMessage } from "$lib/firebase/ticketChat.js";
+    import { listenToFreelancers } from "$lib/firebase/relationships.js";
 
-    // Get dashboard state from context
     const dashboardState = getContext("dashboard");
+    const getUser = getContext("user");
 
-    let tickets = [
-        {
-            id: "101",
-            title: "Login page throwing 500 error",
-            priority: "High",
-            status: "Open",
-            date: "2023-10-27",
-            client: "Acme Corp",
-            hasUnread: true,
-            description:
-                "Users are reporting a 500 Internal Server Error when attempting to log in via the main portal. This seems to be affecting about 30% of traffic. Initial logs show a database connection timeout.",
-            freelancer: "Sarah Jenkins",
-        },
-        {
-            id: "102",
-            title: "Update landing page text",
-            priority: "Low",
-            status: "In Progress",
-            date: "2023-10-26",
-            client: "Globex",
-            hasUnread: false,
-            description:
-                "Please update the hero section text to: 'The future of automation is here'. Also change the CTA button color to match the new brand guidelines.",
-            freelancer: "Mike Ross",
-        },
-        {
-            id: "103",
-            title: "Fix mobile menu alignment",
-            priority: "Medium",
-            status: "Resolved",
-            date: "2023-10-25",
-            client: "Soylent",
-            hasUnread: false,
-            description:
-                "The hamburger menu is misaligned on iPhone 14 Pro Max. It overlaps with the logo. Screenshot attached in previous email.",
-            freelancer: "Sarah Jenkins",
-        },
-        {
-            id: "104",
-            title: "Add new user role",
-            priority: "Low",
-            status: "Closed",
-            date: "2023-10-24",
-            client: "Initech",
-            hasUnread: false,
-            description:
-                "We need a new 'Editor' role that can modify content but not publish it. Permissions should be limited to the /blog section.",
-            freelancer: "Jessica Pearson",
-        },
-        {
-            id: "105",
-            title: "Database connection timeout",
-            priority: "Emergency",
-            status: "Open",
-            date: "2023-10-28",
-            client: "Umbrella",
-            hasUnread: true,
-            description:
-                "CRITICAL: The main production database is rejecting connections. All services are down. Immediate assistance required.",
-            freelancer: "Harvey Specter",
-        },
-        {
-            id: "106",
-            title: "Change logo color",
-            priority: "Low",
-            status: "Resolved",
-            date: "2023-10-20",
-            client: "Stark Ind",
-            hasUnread: false,
-            description:
-                "Rebranding complete. Please update the dashboard logo to the new SVG provided in the assets folder.",
-            freelancer: "Louis Litt",
-        },
-    ];
+    let user = $derived(getUser?.());
 
-    // Priority Value Map for Sorting
-    const priorityMap = {
-        Emergency: 3,
-        High: 2,
-        Medium: 1,
-        Low: 0,
-    };
+    let tickets = $state([]);
+    let chatMessages = $state([]);
+    let myFreelancers = $state([]);
+    let isNewTicketOpen = $state(false);
+    let unsubTickets;
+    let unsubChat;
+    let unsubFreelancers;
+
+    const priorityMap = { Emergency: 3, High: 2, Medium: 1, Low: 0 };
 
     // --- Filter State ---
     let searchTerm = $state("");
-    let sortBy = $state("Date"); // 'Date', 'Priority'
-    let filterStatus = $state("All"); // 'All', 'Open', 'In Progress', 'Resolved', 'Closed'
+    let sortBy = $state("Date");
+    let filterStatus = $state("All");
 
-    // --- Derived Filtered List ---
     let filteredTickets = $derived.by(() => {
-        let result = tickets;
+        let result = [...tickets];
 
-        // 1. Filter by Status
         if (filterStatus !== "All") {
             result = result.filter((t) => t.status === filterStatus);
         }
 
-        // 2. Filter by Search
         if (searchTerm.trim() !== "") {
             const term = searchTerm.toLowerCase();
             result = result.filter(
@@ -113,51 +44,97 @@
             );
         }
 
-        // 3. Sort
         return result.sort((a, b) => {
-            if (sortBy === "Date") {
-                // Newest first
-                return new Date(b.date) - new Date(a.date);
-            } else if (sortBy === "Priority") {
-                // Highest priority first
-                return priorityMap[b.priority] - priorityMap[a.priority];
-            }
+            if (sortBy === "Date") return new Date(b.date) - new Date(a.date);
+            if (sortBy === "Priority") return priorityMap[b.priority] - priorityMap[a.priority];
             return 0;
         });
     });
 
-    // --- Split Groups ---
     let activeTickets = $derived(
-        filteredTickets.filter((t) =>
-            ["Open", "In Progress"].includes(t.status),
-        ),
+        filteredTickets.filter((t) => ["Open", "In Progress"].includes(t.status)),
     );
     let resolvedTickets = $derived(
-        filteredTickets.filter((t) =>
-            ["Resolved", "Closed"].includes(t.status),
-        ),
+        filteredTickets.filter((t) => ["Resolved", "Closed"].includes(t.status)),
     );
 
-    // --- Modal Logic ---
-    import TicketDetailModal from "$lib/components/dashboard/TicketDetailModal.svelte";
-
-    let selectedTicket = $state(null);
+    // --- Modal State ---
+    let selectedTicketId = $state(null);
     let isModalOpen = $state(false);
+    let selectedTicket = $derived(tickets.find((t) => t.id === selectedTicketId) || null);
+
+    onMount(() => {
+        if (!user?.uid) return;
+        unsubTickets = listenToClientTickets(user.uid, (data) => {
+            tickets = data;
+        });
+        unsubFreelancers = listenToFreelancers(user.email, (data) => {
+            myFreelancers = data;
+        });
+    });
+
+    onDestroy(() => {
+        unsubTickets?.();
+        unsubChat?.();
+        unsubFreelancers?.();
+    });
 
     function handleTicketClick(ticket) {
-        selectedTicket = ticket;
+        selectedTicketId = ticket.id;
         isModalOpen = true;
+        unsubChat?.();
+        unsubChat = listenToTicketMessages(ticket.id, user.uid, (msgs) => {
+            chatMessages = msgs;
+        });
     }
 
     function handleModalClose() {
         isModalOpen = false;
+        unsubChat?.();
+        unsubChat = null;
         setTimeout(() => {
-            selectedTicket = null;
-        }, 300); // Wait for fade out
+            selectedTicketId = null;
+            chatMessages = [];
+        }, 300);
     }
 
     function handleStatusUpdate(newStatus) {
-        console.warn("Client attempted to update status", newStatus);
+        // Clients cannot update ticket status
+    }
+
+    async function handleSendMessage(text) {
+        if (!selectedTicket) return;
+        await sendTicketMessage(selectedTicket.id, user.uid, user.displayName, text, selectedTicket.status);
+    }
+
+    async function handleCreateTicket(data) {
+        await createTicket({
+            title: data.title,
+            description: data.description,
+            priority: data.priority,
+            clientId: user.uid,
+            client: user.displayName || user.email,
+            freelancerId: data.freelancerId,
+            freelancer: data.freelancerName,
+        });
+
+        const freelancer = myFreelancers.find((f) => f.uid === data.freelancerId);
+        if (freelancer?.email) {
+            try {
+                await fetch("/api/tickets/notify-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        to: freelancer.email,
+                        clientName: user.displayName || user.email,
+                        ticketTitle: data.title,
+                        priority: data.priority,
+                    }),
+                });
+            } catch (err) {
+                console.error("Failed to send ticket notification email:", err);
+            }
+        }
     }
 </script>
 
@@ -172,6 +149,7 @@
     </div>
     {#if dashboardState.mode === "client"}
         <button
+            onclick={() => (isNewTicketOpen = true)}
             class="inline-flex items-center justify-center rounded-lg bg-black px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-gray-900 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
         >
             <svg
@@ -195,7 +173,6 @@
 
 <!-- Filter Bar -->
 <div class="mb-6 flex flex-col sm:flex-row gap-4">
-    <!-- Search -->
     <div class="relative flex-1 max-w-md">
         <div
             class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
@@ -221,9 +198,7 @@
         />
     </div>
 
-    <!-- Controls -->
     <div class="flex gap-2">
-        <!-- Sort By -->
         <div class="relative">
             <select
                 bind:value={sortBy}
@@ -246,7 +221,6 @@
             </div>
         </div>
 
-        <!-- Filter Status -->
         <div class="relative">
             <select
                 bind:value={filterStatus}
@@ -275,7 +249,6 @@
 </div>
 
 <div class="space-y-8">
-    <!-- Active Tickets Section -->
     {#if activeTickets.length > 0}
         <div class="space-y-4">
             <div class="flex items-center justify-between px-2 mb-2">
@@ -301,7 +274,6 @@
         </div>
     {/if}
 
-    <!-- Resolved History Section -->
     {#if resolvedTickets.length > 0}
         <div class="space-y-4">
             <div class="flex items-center justify-between px-2 mb-2">
@@ -336,11 +308,19 @@
     {/if}
 </div>
 
-<!-- Details Modal -->
 <TicketDetailModal
     isOpen={isModalOpen}
     ticket={selectedTicket}
     isFreelancer={false}
     onClose={handleModalClose}
     onStatusUpdate={handleStatusUpdate}
+    messages={chatMessages}
+    onSendMessage={handleSendMessage}
+/>
+
+<NewTicketModal
+    isOpen={isNewTicketOpen}
+    onClose={() => (isNewTicketOpen = false)}
+    onSave={handleCreateTicket}
+    freelancers={myFreelancers}
 />
