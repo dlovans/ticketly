@@ -6,7 +6,6 @@
         email: "",
         avatar: "",
         phone: "",
-        countryCode: "US",
     };
 
     let isEditing = false;
@@ -113,48 +112,16 @@
                 >
                     Phone Number
                 </label>
-                <div class="flex gap-3">
-                    <div class="relative w-24">
-                        <select
-                            bind:value={profile.countryCode}
-                            disabled={!isEditing}
-                            class="block w-full appearance-none rounded-xl border-transparent {isEditing
-                                ? 'bg-gray-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10'
-                                : 'bg-transparent px-0 border-0 text-gray-900'} text-sm transition-all py-3 px-4 font-medium"
-                        >
-                            <option value="US">🇺🇸 +1</option>
-                            <option value="UK">🇬🇧 +44</option>
-                            <option value="FR">🇫🇷 +33</option>
-                            <option value="DE">🇩🇪 +49</option>
-                        </select>
-                        {#if !isEditing}
-                            <!-- Hide chevron when not editing for cleaner look -->
-                        {:else}
-                            <div
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
-                            >
-                                <svg
-                                    class="h-4 w-4 fill-current"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    ><path
-                                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                                    /></svg
-                                >
-                            </div>
-                        {/if}
-                    </div>
-                    <input
-                        type="tel"
-                        id="profile-phone"
-                        bind:value={profile.phone}
-                        disabled={!isEditing}
-                        placeholder="555-0123"
-                        class="block w-full rounded-xl border-transparent {isEditing
-                            ? 'bg-gray-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10'
-                            : 'bg-transparent px-0 border-0 text-gray-900'} text-sm transition-all py-3 px-4 font-medium"
-                    />
-                </div>
+                <input
+                    type="tel"
+                    id="profile-phone"
+                    bind:value={profile.phone}
+                    disabled={!isEditing}
+                    placeholder="555-0123"
+                    class="block w-full rounded-xl border-transparent {isEditing
+                        ? 'bg-gray-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10'
+                        : 'bg-transparent px-0 border-0 text-gray-900'} text-sm transition-all py-3 px-4 font-medium"
+                />
             </div>
 
             <div>
