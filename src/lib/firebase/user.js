@@ -17,3 +17,11 @@ export async function updateUserProfile(uid, data) {
         updatedAt: serverTimestamp(),
     });
 }
+
+export async function setFreelancerMode(uid, isFreelancer) {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, {
+        freelancer_mode: isFreelancer,
+        updatedAt: serverTimestamp(),
+    });
+}
