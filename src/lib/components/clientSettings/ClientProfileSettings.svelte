@@ -4,6 +4,7 @@
     export let profile = {
         name: "",
         companyName: "",
+        phone: "",
         email: "",
     };
 
@@ -120,6 +121,25 @@
                     bind:value={tempCompanyName}
                     disabled={!isEditing}
                     placeholder="Your company or organization"
+                    class="block w-full rounded-xl border-transparent {isEditing
+                        ? 'bg-gray-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10'
+                        : 'bg-transparent px-0 border-0 text-gray-900'} text-sm transition-all py-3 px-4 font-medium"
+                />
+            </div>
+
+            <div>
+                <label
+                    for="profile-phone"
+                    class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5"
+                >
+                    Phone Number
+                </label>
+                <input
+                    type="tel"
+                    id="profile-phone"
+                    bind:value={profile.phone}
+                    disabled={!isEditing}
+                    placeholder="555-0123"
                     class="block w-full rounded-xl border-transparent {isEditing
                         ? 'bg-gray-50 focus:bg-white focus:ring-4 focus:ring-indigo-500/10'
                         : 'bg-transparent px-0 border-0 text-gray-900'} text-sm transition-all py-3 px-4 font-medium"
