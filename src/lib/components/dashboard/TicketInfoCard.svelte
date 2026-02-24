@@ -201,7 +201,7 @@
                         <h3
                             class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3"
                         >
-                            Update Connectivity
+                            Update Status
                         </h3>
                         <div class="grid grid-cols-2 gap-2">
                             {#each ["Open", "In Progress", "Resolved", "Closed"] as status}
@@ -215,6 +215,14 @@
                                     {status}
                                 </button>
                             {/each}
+                        </div>
+                        <div class="mt-3 flex items-start gap-2 p-2.5 bg-amber-50 rounded-lg border border-amber-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5">
+                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                            <p class="text-[11px] text-amber-700 leading-relaxed">
+                                Use <span class="font-bold">Resolved</span> first. Closing a ticket permanently disables chat.
+                            </p>
                         </div>
                     </div>
                 </div>

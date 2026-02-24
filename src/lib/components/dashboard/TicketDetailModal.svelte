@@ -105,6 +105,7 @@
                                 },
                             ]}
                             onSendMessage={(text) => console.log("Sent", text)}
+                            disabled={ticket.status === "Closed"}
                         />
                     </div>
                 </div>
