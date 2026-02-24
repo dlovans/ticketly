@@ -1,23 +1,57 @@
 <script>
     import { fade } from "svelte/transition";
+    import { goto } from "$app/navigation";
     import logo from "$lib/assets/logo.jpg";
+    import { signupWithEmail, googleAuth } from "$lib/firebase/auth.js";
 
-    let name = "";
-    let email = "";
-    let password = "";
-    let isLoading = false;
+    let name = $state("");
+    let email = $state("");
+    let password = $state("");
+    let isLoading = $state(false);
+    let error = $state("");
 
-    function handleEmailSignup() {
+    async function handleEmailSignup() {
         if (!name || !email || !password) return;
         isLoading = true;
-        // TODO: Implement Firebase email/password signup
-        console.log("Signup with:", email);
+        error = "";
+
+        try {
+            await signupWithEmail(email, password, name);
+            goto("/dashboard");
+        } catch (err) {
+            error = getErrorMessage(err.code);
+        } finally {
+            isLoading = false;
+        }
     }
 
-    function handleGoogleSignup() {
+    async function handleGoogleSignup() {
         isLoading = true;
-        // TODO: Implement Firebase Google signup
-        console.log("Google signup");
+        error = "";
+
+        try {
+            await googleAuth();
+            goto("/dashboard");
+        } catch (err) {
+            error = getErrorMessage(err.code);
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    function getErrorMessage(code) {
+        switch (code) {
+            case "auth/email-already-in-use":
+                return "An account with this email already exists";
+            case "auth/weak-password":
+                return "Password should be at least 6 characters";
+            case "auth/invalid-email":
+                return "Invalid email address";
+            case "auth/popup-closed-by-user":
+                return "Sign-up cancelled";
+            default:
+                return "An error occurred. Please try again.";
+        }
     }
 </script>
 
@@ -47,9 +81,19 @@
                 </p>
             </div>
 
+            <!-- Error Message -->
+            {#if error}
+                <div
+                    class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600"
+                    in:fade
+                >
+                    {error}
+                </div>
+            {/if}
+
             <!-- Google Button -->
             <button
-                on:click={handleGoogleSignup}
+                onclick={handleGoogleSignup}
                 disabled={isLoading}
                 class="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -88,7 +132,10 @@
 
             <!-- Email Form -->
             <form
-                on:submit|preventDefault={handleEmailSignup}
+                onsubmit={(e) => {
+                    e.preventDefault();
+                    handleEmailSignup();
+                }}
                 class="space-y-5"
             >
                 <div>

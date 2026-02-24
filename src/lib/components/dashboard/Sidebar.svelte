@@ -1,12 +1,17 @@
 <script>
     import { getContext } from "svelte";
-    import ModeSwitch from "./ModeSwitch.svelte";
+    import { goto } from "$app/navigation";
     import { page } from "$app/stores";
+    import ModeSwitch from "./ModeSwitch.svelte";
     import logo from "$lib/assets/logo.jpg";
+    import { logout } from "$lib/firebase/auth.js";
 
     let { isOpen = $bindable(false) } = $props();
 
     const dashboardState = getContext("dashboard");
+    const getUser = getContext("user");
+
+    let user = $derived(getUser?.());
 
     let navigation = $derived([
         {
@@ -49,8 +54,6 @@
             : []),
     ]);
 
-    import { goto } from "$app/navigation";
-
     function handleModeSwitch() {
         const newMode =
             dashboardState.mode === "freelancer" ? "client" : "freelancer";
@@ -59,6 +62,25 @@
         // Navigate
         if (newMode === "freelancer") goto("/dashboard/freelancer");
         if (newMode === "client") goto("/dashboard/client");
+    }
+
+    async function handleLogout() {
+        try {
+            await logout();
+            goto("/login");
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    }
+
+    // Get user initials for avatar
+    function getInitials(name) {
+        if (!name) return "?";
+        const parts = name.split(" ");
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return name.slice(0, 2).toUpperCase();
     }
 </script>
 
@@ -113,11 +135,6 @@
     <div class="flex flex-1 flex-col overflow-y-auto px-4 pb-4">
         <nav class="flex-1 space-y-1">
             <div class="px-2 mb-6 mt-2">
-                <!-- Pass standard binding, but also we need to intercept the toggle -->
-                <!-- Actually ModeSwitch probably handles the click internally and just updating 'mode' which is bound. 
-                     If I want to trigger nav on change, I can use a reactive statement or modify ModeSwitch.
-                     Let's check ModeSwitch. 
-                -->
                 <ModeSwitch
                     bind:mode={dashboardState.mode}
                     onToggle={handleModeSwitch}
@@ -175,22 +192,31 @@
     <!-- User Profile Strip (Bottom) -->
     <div class="p-4 border-t border-gray-50">
         <div
-            class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group"
+            class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors group"
         >
-            <div
-                class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white shadow-md shadow-indigo-100"
-            >
-                JS
-            </div>
+            {#if user?.photoURL}
+                <img
+                    src={user.photoURL}
+                    alt={user.displayName || "User"}
+                    class="h-8 w-8 rounded-full object-cover shadow-md shadow-indigo-100"
+                />
+            {:else}
+                <div
+                    class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white shadow-md shadow-indigo-100"
+                >
+                    {getInitials(user?.displayName || user?.email)}
+                </div>
+            {/if}
             <div class="flex-1 min-w-0">
                 <p class="text-xs font-semibold text-gray-900 truncate">
-                    John Smith
+                    {user?.displayName || "User"}
                 </p>
                 <p class="text-[10px] font-medium text-gray-400 truncate">
-                    john@ticketly.app
+                    {user?.email || ""}
                 </p>
             </div>
             <button
+                onclick={handleLogout}
                 class="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200/50 transition-colors"
                 title="Logout"
             >
