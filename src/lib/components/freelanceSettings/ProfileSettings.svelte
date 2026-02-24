@@ -1,20 +1,28 @@
 <script>
     import { fade } from "svelte/transition";
 
-    export let profile = {
-        name: "",
-        email: "",
-        avatar: "",
-        phone: "",
-    };
+    let {
+        profile = $bindable({
+            name: "",
+            email: "",
+            avatar: "",
+            phone: "",
+        }),
+        onSave,
+    } = $props();
 
-    let isEditing = false;
-    let tempName = profile.name;
+    let isEditing = $state(false);
+    let isSaving = $state(false);
+    let tempName = $state(profile.name);
+    let tempPhone = $state(profile.phone);
 
-    function handleSave() {
+    async function handleSave() {
+        isSaving = true;
         profile.name = tempName;
+        profile.phone = tempPhone;
+        if (onSave) await onSave({ name: tempName, phone: tempPhone });
+        isSaving = false;
         isEditing = false;
-        // In real app, dispatch 'save' event or call API
     }
 </script>
 
