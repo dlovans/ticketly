@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "./client.js";
 
 export async function getUserProfile(uid) {
@@ -8,4 +8,12 @@ export async function getUserProfile(uid) {
         return userSnap.data();
     }
     return null;
+}
+
+export async function updateUserProfile(uid, data) {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+    });
 }
