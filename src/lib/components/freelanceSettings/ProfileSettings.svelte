@@ -16,6 +16,13 @@
     let tempName = $state(profile.name);
     let tempPhone = $state(profile.phone);
 
+    $effect(() => {
+        if (!isEditing) {
+            tempName = profile.name;
+            tempPhone = profile.phone;
+        }
+    });
+
     async function handleSave() {
         isSaving = true;
         profile.name = tempName;
