@@ -1,10 +1,12 @@
 <script>
     import { fade } from "svelte/transition";
-    import { onMount } from "svelte";
+    import { getContext, onMount } from "svelte";
     import ProfileSettings from "$lib/components/freelanceSettings/ProfileSettings.svelte";
     import NotificationSettings from "$lib/components/freelanceSettings/NotificationSettings.svelte";
-    import { auth } from "$lib/firebase/client.js";
     import { getUserProfile, updateUserProfile } from "$lib/firebase/user.js";
+
+    const getUser = getContext("user");
+    let user = $derived(getUser?.());
 
     let userProfile = $state({
         name: "",
@@ -17,10 +19,9 @@
         showPhoneNumber: true,
     });
 
-    onMount(async () => {
-        const user = auth.currentUser;
-        if (user) {
-            const profile = await getUserProfile(user.uid);
+    $effect(() => {
+        if (!user?.uid) return;
+        getUserProfile(user.uid).then((profile) => {
             if (profile) {
                 userProfile.name = profile.displayName || "";
                 userProfile.email = profile.email || user.email || "";
@@ -29,12 +30,11 @@
             } else {
                 userProfile.email = user.email || "";
             }
-        }
+        });
     });
 
     async function handleSaveProfile(data) {
-        const user = auth.currentUser;
-        if (!user) return;
+        if (!user?.uid) return;
         await updateUserProfile(user.uid, {
             displayName: data.name,
             phone: data.phone,
@@ -42,8 +42,7 @@
     }
 
     async function handleSaveSettings() {
-        const user = auth.currentUser;
-        if (!user) return;
+        if (!user?.uid) return;
         await updateUserProfile(user.uid, {
             showPhoneNumber: userSettings.showPhoneNumber,
         });
@@ -63,5 +62,8 @@
     <ProfileSettings bind:profile={userProfile} onSave={handleSaveProfile} />
 
     <!-- Notification Settings -->
-    <NotificationSettings bind:settings={userSettings} onSave={handleSaveSettings} />
+    <NotificationSettings
+        bind:settings={userSettings}
+        onSave={handleSaveSettings}
+    />
 </div>
