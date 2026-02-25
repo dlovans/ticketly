@@ -2,24 +2,21 @@
     import { getContext } from "svelte";
     import { slide } from "svelte/transition";
 
-    export let ticket;
-    export let isFreelancer = false;
-    export let onStatusUpdate;
+    let { ticket, isFreelancer = false, onStatusUpdate } = $props();
 
-    let isExpanded = false; // For mobile collapse state
+    let isExpanded = $state(false);
 
-    // Status color helper
-    $: statusColor =
+    let statusColor = $derived(
         ticket.status === "Open"
             ? "bg-blue-50 text-blue-700 ring-blue-600/20"
             : ticket.status === "In Progress"
               ? "bg-purple-50 text-purple-700 ring-purple-600/20"
               : ticket.status === "Resolved"
                 ? "bg-green-50 text-green-700 ring-green-600/20"
-                : "bg-gray-50 text-gray-600 ring-gray-500/10";
+                : "bg-gray-50 text-gray-600 ring-gray-500/10",
+    );
 
-    // Priority color helper
-    $: priorityColor =
+    let priorityColor = $derived(
         ticket.priority === "High"
             ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10"
             : ticket.priority === "Medium"
@@ -28,7 +25,8 @@
                 ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/10"
                 : ticket.priority === "Emergency"
                   ? "bg-red-200 text-red-900 ring-1 ring-inset ring-red-700/10"
-                  : "bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-500/10";
+                  : "bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-500/10",
+    );
 
     function toggleExpand() {
         isExpanded = !isExpanded;
@@ -39,12 +37,13 @@
     class="flex flex-col h-auto md:h-full bg-white border-b md:border-b-0 md:border-r border-gray-100 w-full md:w-96 shrink-0 transition-all duration-300"
 >
     <!-- Header / Mobile Toggle -->
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
     <div
         class="p-4 md:p-6 border-b border-gray-50 flex items-center justify-between cursor-pointer md:cursor-default hover:bg-gray-50 md:hover:bg-white transition-colors"
-        on:click={toggleExpand}
+        onclick={toggleExpand}
         role="button"
         tabindex="0"
-        on:keydown={(e) => e.key === "Enter" && toggleExpand()}
+        onkeydown={(e) => e.key === "Enter" && toggleExpand()}
     >
         <div class="flex-1 min-w-0">
             <div class="flex items-center gap-3 mb-1">
@@ -201,12 +200,12 @@
                         <h3
                             class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3"
                         >
-                            Update Connectivity
+                            Update Status
                         </h3>
                         <div class="grid grid-cols-2 gap-2">
                             {#each ["Open", "In Progress", "Resolved", "Closed"] as status}
                                 <button
-                                    on:click={() => onStatusUpdate(status)}
+                                    onclick={() => onStatusUpdate(status)}
                                     class="px-3 py-2.5 rounded-lg text-xs font-semibold border transition-all duration-200
                                     {ticket.status === status
                                         ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200 transform scale-[1.02]'
@@ -215,6 +214,14 @@
                                     {status}
                                 </button>
                             {/each}
+                        </div>
+                        <div class="mt-3 flex items-start gap-2 p-2.5 bg-amber-50 rounded-lg border border-amber-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5">
+                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                            <p class="text-[11px] text-amber-700 leading-relaxed">
+                                Use <span class="font-bold">Resolved</span> first. Closing a ticket permanently disables chat.
+                            </p>
                         </div>
                     </div>
                 </div>

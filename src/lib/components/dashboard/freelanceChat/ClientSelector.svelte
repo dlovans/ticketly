@@ -1,16 +1,14 @@
 <script>
-    export let clients = [];
-    export let selectedClientId = null;
-    export let onSelectClient;
-    export let isCollapsed = false;
-    export let onToggleCollapse;
+    let { clients = [], selectedClientId = null, onSelectClient, isCollapsed = false, onToggleCollapse } = $props();
 
-    let searchTerm = "";
+    let searchTerm = $state("");
 
-    $: filteredClients = clients.filter(
-        (client) =>
-            client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            client.company.toLowerCase().includes(searchTerm.toLowerCase()),
+    let filteredClients = $derived(
+        clients.filter(
+            (client) =>
+                client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.company.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
     );
 </script>
 
@@ -28,7 +26,7 @@
                 <h2 class="text-lg font-bold text-gray-900">Messages</h2>
             {/if}
             <button
-                on:click={onToggleCollapse}
+                onclick={onToggleCollapse}
                 class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
                 aria-label={isCollapsed ? "Expand list" : "Collapse list"}
             >
@@ -102,7 +100,7 @@
 
         {#each filteredClients as client (client.id)}
             <button
-                on:click={() => onSelectClient(client.id)}
+                onclick={() => onSelectClient(client.id)}
                 class="w-full flex items-center {isCollapsed
                     ? 'justify-center px-2 py-4'
                     : 'px-4 py-4 gap-3'} hover:bg-gray-50 transition-colors text-left relative {selectedClientId ===

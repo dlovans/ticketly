@@ -1,12 +1,9 @@
 <script>
     import { onMount, tick } from "svelte";
 
-    export let messages = [];
-    export let onSendMessage;
-    export let recipientName = "Client";
-    export let onBack = null;
+    let { messages = [], onSendMessage, recipientName = "Client", onBack = null } = $props();
 
-    let newMessage = "";
+    let newMessage = $state("");
     let chatContainer;
 
     async function handleSend() {
@@ -27,13 +24,10 @@
         scrollToBottom();
     });
 
-    // Auto-scroll when messages change
-    $: if (messages) {
-        (async () => {
-            await tick();
-            scrollToBottom();
-        })();
-    }
+    $effect(() => {
+        messages;
+        tick().then(scrollToBottom);
+    });
 </script>
 
 <div class="flex flex-col h-full bg-white">
@@ -44,7 +38,7 @@
         <div class="flex items-center gap-3">
             {#if onBack}
                 <button
-                    on:click={onBack}
+                    onclick={onBack}
                     class="md:hidden -ml-1 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
                     aria-label="Back to client list"
                 >
@@ -153,7 +147,7 @@
     <!-- Input Area -->
     <div class="p-4 bg-white border-t border-gray-100">
         <form
-            on:submit|preventDefault={handleSend}
+            onsubmit={(e) => { e.preventDefault(); handleSend(); }}
             class="flex items-end gap-2 bg-gray-50 rounded-2xl p-2 pr-2 border border-gray-200/50 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/30 transition-all"
         >
             <button
@@ -180,7 +174,7 @@
             <div class="flex-1 relative py-1">
                 <textarea
                     bind:value={newMessage}
-                    on:keydown={(e) => {
+                    onkeydown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();
                             handleSend();

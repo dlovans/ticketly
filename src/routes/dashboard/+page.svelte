@@ -1,22 +1,41 @@
 <script>
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { auth } from "$lib/firebase/client.js";
+    import { getUserProfile, setFreelancerMode } from "$lib/firebase/user.js";
 
     let isLoading = $state(true);
 
-    onMount(() => {
-        const mode = localStorage.getItem("ticketly_mode");
-        if (mode === "freelancer") {
-            goto("/dashboard/freelancer", { replaceState: true });
-        } else if (mode === "client") {
-            goto("/dashboard/client", { replaceState: true });
+    onMount(async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const profile = await getUserProfile(user.uid);
+            if (profile && profile.freelancer_mode === true) {
+                goto("/dashboard/freelancer", { replaceState: true });
+                return;
+            } else if (profile && profile.freelancer_mode === false) {
+                goto("/dashboard/client", { replaceState: true });
+                return;
+            }
         } else {
-            isLoading = false;
+            const mode = localStorage.getItem("ticketly_mode");
+            if (mode === "freelancer") {
+                goto("/dashboard/freelancer", { replaceState: true });
+                return;
+            } else if (mode === "client") {
+                goto("/dashboard/client", { replaceState: true });
+                return;
+            }
         }
+        isLoading = false;
     });
 
-    function selectMode(mode) {
+    async function selectMode(mode) {
         localStorage.setItem("ticketly_mode", mode);
+        const user = auth.currentUser;
+        if (user) {
+            await setFreelancerMode(user.uid, mode === "freelancer");
+        }
         goto(`/dashboard/${mode}`);
     }
 </script>

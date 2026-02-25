@@ -2,22 +2,21 @@
     import { fade, fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
 
-    export let isOpen = false;
-    export let onClose;
-    export let onSave;
-    export let client = null; // Client object to edit
+    let { isOpen = false, onClose, onSave, client = null } = $props();
 
-    let formData = {
+    let formData = $state({
         email: "",
         companyName: "",
         name: "",
         productName: "",
         website: "",
-    };
+    });
 
-    $: if (client) {
-        formData = { ...client };
-    }
+    $effect(() => {
+        if (client) {
+            formData = { ...client };
+        }
+    });
 
     function handleSubmit() {
         onSave(formData);
@@ -26,10 +25,11 @@
 </script>
 
 {#if isOpen && client}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
     <div
         class="fixed inset-0 z-50 bg-gray-900/40 backdrop-blur-md flex items-center justify-center p-4"
         transition:fade={{ duration: 200 }}
-        on:click|self={onClose}
+        onclick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         role="dialog"
         aria-modal="true"
     >
@@ -48,7 +48,7 @@
                     </p>
                 </div>
                 <button
-                    on:click={onClose}
+                    onclick={onClose}
                     class="text-gray-400 hover:text-gray-600 p-2 rounded-xl hover:bg-gray-50 transition-colors"
                 >
                     <svg
@@ -163,13 +163,13 @@
                 class="p-6 border-t border-gray-100 bg-white flex justify-end gap-3"
             >
                 <button
-                    on:click={onClose}
+                    onclick={onClose}
                     class="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-gray-800 transition-all shadow-sm"
                 >
                     Cancel
                 </button>
                 <button
-                    on:click={handleSubmit}
+                    onclick={handleSubmit}
                     class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-xl hover:from-indigo-500 hover:to-indigo-400 shadow-md shadow-indigo-200 transition-all transform hover:-translate-y-0.5"
                 >
                     Save Changes

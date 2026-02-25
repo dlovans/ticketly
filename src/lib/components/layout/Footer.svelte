@@ -41,21 +41,21 @@
                 <ul class="space-y-3">
                     <li>
                         <button
-                            on:click={() => handleScroll('features')}
+                            onclick={() => handleScroll('features')}
                             class="text-slate-600 hover:text-primary-600 text-sm transition-colors"
                             >Features</button
                         >
                     </li>
                     <li>
                         <button
-                            on:click={() => handleScroll('pricing')}
+                            onclick={() => handleScroll('pricing')}
                             class="text-slate-600 hover:text-primary-600 text-sm transition-colors"
                             >Pricing</button
                         >
                     </li>
                     <li>
                         <button
-                            on:click={() => handleScroll('faq')}
+                            onclick={() => handleScroll('faq')}
                             class="text-slate-600 hover:text-primary-600 text-sm transition-colors"
                             >FAQ</button
                         >

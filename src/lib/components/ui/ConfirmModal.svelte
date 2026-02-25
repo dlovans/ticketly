@@ -2,14 +2,16 @@
     import { fade, fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
 
-    export let isOpen = false;
-    export let title = "Confirm Action";
-    export let message = "Are you sure you want to proceed?";
-    export let confirmLabel = "Confirm";
-    export let cancelLabel = "Cancel";
-    export let confirmVariant = "danger"; // 'danger' | 'primary'
-    export let onConfirm = () => {};
-    export let onCancel = () => {};
+    let {
+        isOpen = $bindable(false),
+        title = "Confirm Action",
+        message = "Are you sure you want to proceed?",
+        confirmLabel = "Confirm",
+        cancelLabel = "Cancel",
+        confirmVariant = "danger",
+        onConfirm = () => {},
+        onCancel = () => {},
+    } = $props();
 
     function handleConfirm() {
         onConfirm();
@@ -34,13 +36,14 @@
     }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
     <div
         class="fixed inset-0 z-50 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center p-4"
         transition:fade={{ duration: 150 }}
-        on:click={handleBackdropClick}
+        onclick={handleBackdropClick}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -111,13 +114,13 @@
                 class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100"
             >
                 <button
-                    on:click={handleCancel}
+                    onclick={handleCancel}
                     class="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:text-gray-800 transition-all shadow-sm"
                 >
                     {cancelLabel}
                 </button>
                 <button
-                    on:click={handleConfirm}
+                    onclick={handleConfirm}
                     class="px-4 py-2 text-sm font-semibold text-white rounded-xl shadow-sm transition-all {confirmVariant ===
                     'danger'
                         ? 'bg-red-600 hover:bg-red-700 shadow-red-200'
