@@ -21,7 +21,6 @@
 	},
 	"dependencies": {
 		"firebase": "^12.7.0",
-		"resend": "^6.9.2",
-		"nodemailer": "^6.9.4"
+		"resend": "^6.9.2"
 	}
 }

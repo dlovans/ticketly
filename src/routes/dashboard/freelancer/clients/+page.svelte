@@ -44,16 +44,8 @@
             throw new Error(addClientError);
         }
 
-        // Create invite in Firestore and get its id
-        let inviteRef;
-        try {
-            inviteRef = await sendInvite(user.uid, user.displayName, user.email, clientData);
-        } catch (err) {
-            console.error("Failed to create invite in Firestore:", err);
-            throw err;
-        }
-
-        // Send the invite email including the invite id so recipient can accept
+        await sendInvite(user.uid, user.displayName, user.email, clientData);
+        // Send the invite email
         try {
             await fetch("/api/invites/send-email", {
                 method: "POST",
@@ -62,7 +54,6 @@
                     to: clientData.email,
                     freelancerName: user.displayName,
                     companyName: clientData.companyName,
-                    inviteId: inviteRef.id,
                 }),
             });
         } catch (err) {

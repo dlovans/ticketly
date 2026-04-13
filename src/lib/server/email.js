@@ -1,40 +1,7 @@
 import { Resend } from "resend";
-import { RESEND_API_KEY, RESEND_FROM, USE_FAKE_EMAIL, ORIGIN } from "$env/static/private";
-import nodemailer from "nodemailer";
+import { RESEND_API_KEY } from "$env/static/private";
 
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
-
-const FROM_ADDRESS = RESEND_FROM || "Ticketly <onboarding@resend.dev>";
-
-// Simple cached Ethereal transporter for local fake sending
-let _ethTransport;
-async function sendViaEthereal({ to, subject, html }) {
-    if (!_ethTransport) {
-        // createTestAccount creates credentials on the fly for ethereal.email
-        const testAccount = await nodemailer.createTestAccount();
-        _ethTransport = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false,
-            auth: {
-                user: testAccount.user,
-                pass: testAccount.pass,
-            },
-        });
-    }
-
-    const info = await _ethTransport.sendMail({
-        from: FROM_ADDRESS,
-        to,
-        subject,
-        html,
-    });
-
-    // nodemailer provides a preview URL for ethereal
-    const preview = nodemailer.getTestMessageUrl(info);
-    console.log("Ethereal preview URL:", preview);
-    return { data: { id: info.messageId, previewUrl: preview } };
-}
+const resend = new Resend(RESEND_API_KEY);
 
 /**
  * Send a notification email when a new ticket is assigned to a freelancer.
@@ -70,39 +37,20 @@ export async function sendTicketNotificationEmail({ to, clientName, ticketTitle,
         </div>
     `;
 
-    // Use Ethereal (fake) when RESEND_API_KEY missing or USE_FAKE_EMAIL=true
-    if (!resend || USE_FAKE_EMAIL === "true") {
-        return sendViaEthereal({ to, subject, html });
-    }
-
-    try {
-        const resp = await resend.emails.send({
-            from: FROM_ADDRESS,
-            to,
-            subject,
-            html,
-        });
-
-        if (resp?.error) {
-            throw new Error(resp.error.message || JSON.stringify(resp.error));
-        }
-
-        return resp;
-    } catch (err) {
-        console.error("sendTicketNotificationEmail error:", err);
-        throw err;
-    }
+    return resend.emails.send({
+        from: "Ticketly <onboarding@resend.dev>",
+        to,
+        subject,
+        html,
+    });
 }
 
 /**
  * Send an invite email to a client.
  * @param {{ to: string, freelancerName: string, companyName?: string }} options
  */
-export async function sendInviteEmail({ to, freelancerName, companyName, inviteId }) {
+export async function sendInviteEmail({ to, freelancerName, companyName }) {
     const subject = `${freelancerName} invited you to collaborate on Ticketly`;
-
-    const origin = ORIGIN || process.env.ORIGIN || "http://localhost:5173";
-    const acceptUrl = inviteId ? `${origin}/register?invite=${inviteId}` : `${origin}/register`;
 
     const html = `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
@@ -115,7 +63,7 @@ export async function sendInviteEmail({ to, freelancerName, companyName, inviteI
                 Sign up or log in to accept the invite and start working together.
             </p>
             <a
-                href="${acceptUrl}"
+                href="${process.env.ORIGIN || "http://localhost:5173"}/register"
                 style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px;"
             >
                 Get Started
@@ -126,31 +74,10 @@ export async function sendInviteEmail({ to, freelancerName, companyName, inviteI
         </div>
     `;
 
-    // Use Ethereal (fake) when RESEND_API_KEY missing or USE_FAKE_EMAIL=true
-    if (!resend || USE_FAKE_EMAIL === "true") {
-        return sendViaEthereal({ to, subject, html });
-    }
-
-    try {
-        const resp = await resend.emails.send({
-            from: FROM_ADDRESS,
-            to,
-            subject,
-            html,
-        });
-
-        if (resp?.error) {
-            // Normalize Resend validation errors into thrown errors with helpful guidance
-            const msg = resp.error.message || JSON.stringify(resp.error);
-            const guidance = msg.includes("verify a domain")
-                ? `${msg} — verify a sending domain at https://resend.com/domains and set RESEND_FROM to an email on that domain, or use your account's verified from address.`
-                : msg;
-            throw new Error(guidance);
-        }
-
-        return resp;
-    } catch (err) {
-        console.error("sendInviteEmail error:", err);
-        throw err;
-    }
+    return resend.emails.send({
+        from: "Ticketly <onboarding@resend.dev>",
+        to,
+        subject,
+        html,
+    });
 }
