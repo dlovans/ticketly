@@ -2,7 +2,7 @@
 
 ## Tech Stack
 
-- SvelteKit 5
+ - Svelte 5 + SvelteKit (v2.x)
 - Tailwind CSS 4
 - Firebase (Auth, Firestore, Storage)
 - **NO TypeScript**
