@@ -18,10 +18,21 @@
     setContext("user", () => user);
 
     onMount(() => {
-        const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
             if (authUser) {
                 user = authUser;
                 isLoading = false;
+
+                // Trigger sending of any "sendOnLogin" notifications for this user.
+                try {
+                    await fetch('/api/notifications/send-on-login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: authUser.email }),
+                    });
+                } catch (err) {
+                    console.error('Failed to trigger send-on-login notifications:', err);
+                }
             } else {
                 goto("/login");
             }
