@@ -40,20 +40,20 @@
     // Mock Invoices
     const invoices = [
         {
-            id: "INV-2023-001",
-            date: "Oct 12, 2023",
+            id: "INV-2025-001",
+            date: "Oct 12, 2025",
             amount: "$19.00",
             status: "Paid",
         },
         {
-            id: "INV-2023-002",
-            date: "Sep 12, 2023",
+            id: "INV-2025-002",
+            date: "Sep 12, 2025",
             amount: "$19.00",
             status: "Paid",
         },
         {
-            id: "INV-2023-003",
-            date: "Aug 12, 2023",
+            id: "INV-2025-003",
+            date: "Aug 12, 2025",
             amount: "$19.00",
             status: "Paid",
         },
