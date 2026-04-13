@@ -74,7 +74,7 @@
                         <div class="flex gap-2 items-center">
                             <select
                                 value={settings.notification_delays[p].type}
-                                on:change={(e) => {
+                                onchange={(e) => {
                                     const val = e.target.value;
                                     if (val === 'delay') setDelay(p, 'delay', settings.notification_delays[p].minutes ?? 30);
                                     else setDelay(p, val);
@@ -92,7 +92,7 @@
                                     min="1"
                                     class="w-24 rounded-md border px-2 py-2 text-sm"
                                     value={settings.notification_delays[p].minutes}
-                                    on:change={(e) => setDelay(p, 'delay', Number(e.target.value))}
+                                    onchange={(e) => setDelay(p, 'delay', Number(e.target.value))}
                                 />
                             {/if}
                         </div>
