@@ -17,6 +17,12 @@
 
     let userSettings = $state({
         showPhoneNumber: true,
+        notification_delays: {
+            Emergency: { type: "immediate" },
+            High: { type: "immediate" },
+            Medium: { type: "delay", minutes: 30 },
+            Low: { type: "on_login" },
+        },
     });
 
     $effect(() => {
@@ -27,6 +33,7 @@
                 userProfile.email = profile.email || user.email || "";
                 userProfile.phone = profile.phone || "";
                 userSettings.showPhoneNumber = profile.showPhoneNumber ?? true;
+                userSettings.notification_delays = profile.notification_delays || userSettings.notification_delays;
             } else {
                 userProfile.email = user.email || "";
             }
@@ -45,6 +52,7 @@
         if (!user?.uid) return;
         await updateUserProfile(user.uid, {
             showPhoneNumber: userSettings.showPhoneNumber,
+            notification_delays: userSettings.notification_delays,
         });
     }
 </script>
