@@ -60,7 +60,7 @@
     }
 
     async function handleAcceptInvite(invite) {
-        await acceptInvite(invite);
+        await acceptInvite(invite, user?.uid);
     }
 
     async function handleDeclineInvite(inviteId) {
