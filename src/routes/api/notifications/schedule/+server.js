@@ -1,7 +1,7 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/firebase/client.js";
 import { sendTicketNotificationEmail } from "$lib/server/email.js";
-import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, Timestamp, doc, getDoc } from "firebase/firestore";
 
 /**
  * Schedule or send a ticket notification based on priority.
@@ -17,15 +17,33 @@ export async function POST({ request }) {
             return json({ error: "Missing required fields: to, clientName, ticketTitle, priority" }, { status: 400 });
         }
 
-        // Immediate send for high priority
-        if (priority === "Emergency" || priority === "High") {
+        // If we have a freelancerId, try to read their notification settings
+        let userDelays = null;
+        if (freelancerId) {
+            try {
+                const userRef = doc(db, "users", freelancerId);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const up = userSnap.data();
+                    userDelays = up.notification_delays || null;
+                }
+            } catch (err) {
+                console.warn("Could not read freelancer profile for notification delays:", err);
+            }
+        }
+
+        // Resolve scheduling strategy based on user settings if present, otherwise fall back
+        // to default rules: Emergency/High -> immediate, Medium -> 30min, Low -> on login
+        const delayConfig = userDelays?.[priority];
+
+        if (delayConfig?.type === "immediate" || (!delayConfig && (priority === "Emergency" || priority === "High"))) {
             const result = await sendTicketNotificationEmail({ to, clientName, ticketTitle, priority });
             return json({ success: true, immediate: true, data: result?.id || null });
         }
 
-        // Medium -> schedule 30 minutes from now
-        if (priority === "Medium") {
-            const scheduledAt = Timestamp.fromDate(new Date(Date.now() + 30 * 60 * 1000));
+        if (delayConfig?.type === "delay" || (!delayConfig && priority === "Medium")) {
+            const minutes = delayConfig?.minutes ?? 30;
+            const scheduledAt = Timestamp.fromDate(new Date(Date.now() + minutes * 60 * 1000));
             const docRef = await addDoc(collection(db, "notifications"), {
                 to,
                 clientName,
@@ -41,7 +59,7 @@ export async function POST({ request }) {
             return json({ success: true, scheduled: true, id: docRef.id });
         }
 
-        // Low -> send on next login
+        // Default/explicit on-login
         const lowRef = await addDoc(collection(db, "notifications"), {
             to,
             clientName,
