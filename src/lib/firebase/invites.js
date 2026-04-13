@@ -4,6 +4,7 @@ import {
     addDoc,
     updateDoc,
     deleteDoc,
+    getDoc,
     query,
     where,
     orderBy,
@@ -20,6 +21,7 @@ const invitesRef = collection(db, "pendingInvites");
  * The invite stays pending until the client accepts or declines.
  */
 export async function sendInvite(freelancerUid, freelancerName, freelancerEmail, clientData) {
+    // return the DocumentReference so callers can get the id
     return addDoc(invitesRef, {
         freelancerId: freelancerUid,
         freelancerName,
@@ -36,10 +38,30 @@ export async function sendInvite(freelancerUid, freelancerName, freelancerEmail,
 }
 
 /**
+ * Fetch a pending invite document by id.
+ * Returns { id, ...data } or null if not found.
+ */
+export async function fetchInviteById(inviteId) {
+    const ref = doc(invitesRef, inviteId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    return { id: snap.id, ...snap.data() };
+}
+
+/**
+ * Accept an invite by id. Fetches the invite and calls acceptInvite.
+ */
+export async function acceptInviteById(inviteId, clientUid) {
+    const invite = await fetchInviteById(inviteId);
+    if (!invite) throw new Error("Invite not found");
+    return acceptInvite(invite, clientUid);
+}
+
+/**
  * Accept an invite (client action).
  * Atomically marks the invite as accepted and creates a relationship.
  */
-export async function acceptInvite(invite) {
+export async function acceptInvite(invite, clientUid) {
     const batch = writeBatch(db);
 
     // 1. Update invite status
@@ -51,7 +73,7 @@ export async function acceptInvite(invite) {
 
     // 2. Create the relationship
     const relationshipRef = doc(collection(db, "relationships"));
-    batch.set(relationshipRef, {
+    const relationship = {
         freelancerId: invite.freelancerId,
         freelancerName: invite.freelancerName,
         freelancerEmail: invite.freelancerEmail,
@@ -63,7 +85,13 @@ export async function acceptInvite(invite) {
         status: "active",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-    });
+    };
+
+    if (clientUid) {
+        relationship.clientUid = clientUid;
+    }
+
+    batch.set(relationshipRef, relationship);
 
     return batch.commit();
 }
