@@ -14,6 +14,7 @@ The core idea is a single application where one user account can operate in two 
 
 Freelancers typically manage client communication across a patchwork of tools — email threads, Slack, WhatsApp, and spreadsheets. There is rarely a dedicated, structured space for tracking issues, bugs, and tasks specific to a freelance engagement. I chose this topic because I wanted to solve a real-world problem with a real product, and to do so using technologies I had not yet worked with at meaningful depth: specifically **SvelteKit 5** and **Firebase**.
 
+
 A secondary goal was architectural: I wanted to build a proper **service layer** — where all data operations are abstracted into dedicated modules — keeping UI components clean and focused solely on presentation logic.
 
 ### Definition of Success
@@ -55,7 +56,7 @@ Tasks were tracked on a board with columns: **Backlog → In Progress → Done**
 
 | Technology | Role | Why |
 |---|---|---|
-| **SvelteKit 5** | Full-stack framework (frontend + server routes) | New to me; modern reactivity model; SSR and SPA in one framework |
+| **Svelte 5 + SvelteKit (v2.x)** | Full-stack framework (frontend + server routes) | New to me; modern reactivity model; SSR and SPA in one framework |
 | **Firebase Auth** | Authentication | Email/password and Google OAuth out of the box |
 | **Firebase Firestore** | Real-time NoSQL database | Push-based updates without polling; no custom backend needed |
 | **Firebase Storage** | File/image uploads | Integrated with Firestore; handles large files |
@@ -64,9 +65,9 @@ Tasks were tracked on a board with columns: **Backlog → In Progress → Done**
 | **Vite** | Build tool | Extremely fast hot-module replacement during development |
 | **@sveltejs/adapter-node** | Deployment | Compiles to a Node.js server for self-hosting |
 
-### New Technology: SvelteKit 5 & Svelte Runes
+### New Technology: Svelte 5 & SvelteKit (v2.x) + Svelte Runes
 
-SvelteKit 5 was the most significant piece of new technology in this project. The key difference from frameworks like React or Vue is that **Svelte compiles to vanilla JavaScript at build time** — there is no virtual DOM at runtime. This makes the output leaner and the runtime faster.
+Svelte 5 and SvelteKit (v2.x) were the most significant pieces of new technology in this project. The key difference from frameworks like React or Vue is that **Svelte compiles to vanilla JavaScript at build time** — there is no virtual DOM at runtime. This makes the output leaner and the runtime faster.
 
 Svelte 5 specifically introduced **Runes** — a new reactive primitive system that replaces the older `$:` syntax:
 
