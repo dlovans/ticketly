@@ -3,6 +3,7 @@
     import { goto } from "$app/navigation";
     import logo from "$lib/assets/logo.jpg";
     import { signupWithEmail, googleAuth } from "$lib/firebase/auth.js";
+    import { acceptInviteById } from "$lib/firebase/invites.js";
 
     let name = $state("");
     let email = $state("");
@@ -16,7 +17,18 @@
         error = "";
 
         try {
-            await signupWithEmail(email, password, name);
+            const cred = await signupWithEmail(email, password, name);
+            // If there is an invite query param, accept it for the newly created account
+            try {
+                const params = new URLSearchParams(location.search);
+                const inviteId = params.get("invite");
+                if (inviteId) {
+                    const uid = cred?.user?.uid;
+                    await acceptInviteById(inviteId, uid);
+                }
+            } catch (e) {
+                console.error("Failed to accept invite after signup:", e);
+            }
             goto("/dashboard");
         } catch (err) {
             error = getErrorMessage(err.code);
