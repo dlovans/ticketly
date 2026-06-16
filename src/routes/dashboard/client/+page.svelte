@@ -121,7 +121,9 @@
         const freelancer = myFreelancers.find((f) => f.uid === data.freelancerId);
         if (freelancer?.email) {
             try {
-                await fetch("/api/tickets/notify-email", {
+                // Use the scheduling endpoint which will send immediately for High/Emergency,
+                // schedule 30 min for Medium, and queue for next login for Low.
+                await fetch("/api/notifications/schedule", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -129,10 +131,11 @@
                         clientName: user.displayName || user.email,
                         ticketTitle: data.title,
                         priority: data.priority,
+                        freelancerId: data.freelancerId,
                     }),
                 });
             } catch (err) {
-                console.error("Failed to send ticket notification email:", err);
+                console.error("Failed to schedule ticket notification:", err);
             }
         }
     }
